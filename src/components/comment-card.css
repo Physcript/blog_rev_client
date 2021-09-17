@@ -1,0 +1,11 @@
+
+
+section{
+    display: flex;
+    flex-direction: column;
+}
+
+.ui.tiny.label {
+    padding-top: 0;
+    padding-left: 13px;
+}

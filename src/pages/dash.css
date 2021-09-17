@@ -1,0 +1,28 @@
+
+.center-me {
+  align-items: left;
+  align-self: center;
+  }
+  .ui.card {
+    width:100%;
+  }
+  .ui.card > .content >.description {
+    word-break: break-word;
+  }
+  .word-break{
+    word-break: break-word;
+  }
+
+  .content {
+    padding-bottom: 0 !important;
+  }
+
+  .ui.form textarea {
+    resize: none;
+  } 
+
+  @media only screen and (max-width: 600px) {
+    body {
+      background-color: lightblue;
+    }
+  }

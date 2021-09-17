@@ -1,0 +1,14 @@
+
+
+.header-login{
+   display:flex;
+   align-items: center;
+}
+.ui.input > input {
+    margin: .5em 1em .5em 0;
+}
+
+.error {
+    color:#FF7F7F  !important;
+    margin: 0 1em !important;
+}

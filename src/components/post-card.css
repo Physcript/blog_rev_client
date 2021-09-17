@@ -1,0 +1,12 @@
+.ui.tiny.label {
+    padding-left: 13px;
+}
+
+form .comment-field {
+    justify-content: center;
+}
+form .comment-field .column {
+    justify-self: center;
+    align-items: center;
+    align-self: center;
+}
