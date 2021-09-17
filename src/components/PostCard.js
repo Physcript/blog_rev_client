@@ -1,19 +1,22 @@
 
-import {useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Grid, Label, Form , Button, Icon, Card } from "semantic-ui-react"
 import CommentCard from './CommentCard'
 import moment from 'moment'
 
 // graphq
-import { useQuery } from '@apollo/client'
+import { useQuery , useMutation  } from '@apollo/client'
 import { GET_COMMENT_QUERY } from '../graphql/query'
+import { CREATE_COMMENT_MUTATION } from '../graphql/mutation'
 
 import 'semantic-ui-css/semantic.min.css'
 import './post-card.css'
 
 const PostCard = ({ data }) => {
 
-    const [ post , setPost ] = useState({
+    
+
+    let [ post , setPost ] = useState({
         _id : data._id,
         firstName : data.firstName,
         body: data.body.length >= 150 ? data.body.slice(0,150) : data.body,
@@ -24,22 +27,73 @@ const PostCard = ({ data }) => {
 
     })
 
+
     let [ myComment , setMyComment ] = useState([])
+
+    const [ postComment , setPostComment ] = useState({
+        'comment': ''
+    })
+
+    const [ createdComment, setCreatedComment ] = useState({})
+
+
+    let [util,setUtil] = useState({
+        "skip": 0,
+        "limit": 1,
+    })
 
     const [ show_more , setShow_more ] = useState({
         "title" : 'Show more'
     })
     
-    let resultComment = useQuery(GET_COMMENT_QUERY, {
+    let resultComment  = useQuery(GET_COMMENT_QUERY, {
         variables:{
-            postId: post._id
+            postId: post._id,
+            skip: util.limit,
+            limit: util.limit
+
         }
     })
 
+    const [ creatingComment ] = useMutation(  CREATE_COMMENT_MUTATION , {
+        update( proxy,result ) {
+
+        resultComment.refetch()
+
+
+        },onError(error){
+            console.log(error.graphQLErrors[0].extensions.errors)
+        }
+    })
+
+    const commentHandler = (e) => {
+        e.preventDefault()
+        creatingComment({
+            variables:{
+                postId: post._id,
+                body: postComment.comment
+            }
+        })
+    } 
+
+    const onChange = (e) => {
+        const {name,value} = e.target
+        setPostComment( (val) => ({ ...val, [name]: value}) )
+    }
+    
+    const showComment = (e) => {
+        e.preventDefault()
+        setUtil( (e) => ({ "skip": 0 , "limit": 5 }) )
+
+    }
+
     useEffect( () => {
         if(resultComment.data){
-           setMyComment( resultComment.data.getComment ) 
+           setMyComment( resultComment.data.getComment )
         }
+
+
+
     },[resultComment])
 
     
@@ -75,20 +129,31 @@ const PostCard = ({ data }) => {
                     <Grid columns = {2} className = 'comment-field'>
                         <Grid.Row>
                             <Grid.Column width = {12}>
-                                <Form.Input  size = 'tiny' placeholder = 'Add comment here..' />
+                                <Form.Input  
+                                    size = 'mini' 
+                                    placeholder = 'Add comment here..'
+                                    name = "comment"
+                                    value = {postComment.comment}
+                                    onChange = {onChange}
+                                    />
                             </Grid.Column>
                             <Grid.Column width = {4}>
-                                <Button size = 'tiny' primary > Comment </Button>
+                                <Button 
+                                    size = 'tiny' 
+                                    primary 
+                                    onClick = {commentHandler}
+                                    > Comment </Button>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
                     </Form>
-                        {post.comment[0] ? (
-                            <CommentCard comment = {post.comment} />
-                        ) : '' }
+
+                        { myComment.map( (val) => { return (
+                            <CommentCard key = {val._id} comment = {val} />
+                        ) } ) }
 
                         { myComment.length >=  1 ?  (
-                            <Label> Show more comment </Label>
+                            <Label onClick = {showComment} > Show more comment </Label>
                         ) : ''}
                     
                 </Card.Content>

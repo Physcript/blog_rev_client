@@ -10,17 +10,17 @@ import 'semantic-ui-css/semantic.min.css'
 import './comment-card.css'
 
 const CommentCard = ({comment}) => {
-
+    console.log(comment)
     const [myComment, setMyComment] = useState([])
 
     const [ data  , setData ] = useState({
-        body: (comment ? comment[0].body : '') ,
-        name: (comment ? comment[0].firstName : ''),
-        createdAt : (comment ? comment[0].createdAt :'' )
+        body: (comment ? comment.body : '') ,
+        name: (comment ? comment.firstName : ''),
+        createdAt : (comment ? comment.createdAt :'' )
     })
     
     return (
-        <Card>
+        <Card key = {comment.id}>
           <Card.Content header = {data.name} size = 'large' />
 
           <Label size = 'tiny'>

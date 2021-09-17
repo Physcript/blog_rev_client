@@ -45,3 +45,20 @@ export const CREATE_POST_MUTATION = gql`
         )
     }
 `
+
+export const CREATE_COMMENT_MUTATION = gql`
+    mutation createComment (
+        $body:String
+        $postId:String
+    ){
+        createComment(
+            body:$body
+            postId:$postId
+        ){
+            _id
+            body
+            firstName
+            createdAt
+        }
+    }
+`

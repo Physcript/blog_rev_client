@@ -22,9 +22,13 @@ export const GET_POSTS_QUERY = gql`
 export const GET_COMMENT_QUERY = gql`
     query getComment(  
         $postId: String
+        $skip: Int
+        $limit: Int
     ) {
         getComment (
             postId: $postId
+            skip: $skip
+            limit : $limit
         ) {
             _id
             body
