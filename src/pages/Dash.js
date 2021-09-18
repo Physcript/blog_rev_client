@@ -15,7 +15,9 @@ import './dash.css'
 const Dash = () => {
     
     let {error,loading,data,refetch} = useQuery(GET_POSTS_QUERY,{
-        
+        onError(error){
+            console.log(error)
+        }
     })
 
     let [post ,setPost] = useState([])

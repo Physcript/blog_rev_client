@@ -10,7 +10,6 @@ import 'semantic-ui-css/semantic.min.css'
 import './comment-card.css'
 
 const CommentCard = ({comment}) => {
-    console.log(comment)
     const [myComment, setMyComment] = useState([])
 
     const [ data  , setData ] = useState({

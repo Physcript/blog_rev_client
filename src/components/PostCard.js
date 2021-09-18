@@ -49,7 +49,7 @@ const PostCard = ({ data }) => {
     let resultComment  = useQuery(GET_COMMENT_QUERY, {
         variables:{
             postId: post._id,
-            skip: util.limit,
+            skip: util.skip,
             limit: util.limit
 
         }
@@ -59,7 +59,7 @@ const PostCard = ({ data }) => {
         update( proxy,result ) {
 
         resultComment.refetch()
-
+        setUtil( (e) => ({ skip: 0 , limit: 1 }))
 
         },onError(error){
             console.log(error.graphQLErrors[0].extensions.errors)
@@ -83,13 +83,23 @@ const PostCard = ({ data }) => {
     
     const showComment = (e) => {
         e.preventDefault()
-        setUtil( (e) => ({ "skip": 0 , "limit": 5 }) )
-
+        if( util.limit == 1 && util.skip == 0  ){
+            setUtil( (e) => ({ "skip": 0, "limit": 5 }) )
+        }else if( post.countComment > util.skip + 5 ){
+            setUtil( (e) => ({ "skip": e.skip += 5 , "limit" : 5}) )
+            console.log( post.countComment )
+            console.log(util.skip)
+        } else {
+            console.log( post.countComment )
+            console.log(util.skip)
+        }
+        
     }
 
     useEffect( () => {
         if(resultComment.data){
            setMyComment( resultComment.data.getComment )
+           resultComment.refetch()
         }
 
 
@@ -122,7 +132,7 @@ const PostCard = ({ data }) => {
                 </div>
             } />
             <Card.Content extra>
-                <Label>  <Icon name = "comments" />  Comment  {myComment.length} </Label> 
+                <Label>  <Icon name = "comments" />  Comment  {post.countComment} </Label> 
                 <Label> <Icon name = "heart" />  Like {post.countLike} </Label>
                 <Card.Content extra>
                     <Form>
