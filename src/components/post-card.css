@@ -10,3 +10,19 @@ form .comment-field .column {
     align-items: center;
     align-self: center;
 }
+
+.dropbox {
+    display: flex !important;
+    flex-direction: column;
+}
+.ui.basic.button{
+    margin:0
+}
+
+.ui.grid .grid-header {
+    text-align: center;
+}
+
+.ui.grid .no-margin-top {
+    padding-bottom: 0;
+}

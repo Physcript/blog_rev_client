@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from 'react'
-import { Grid, Label, Form , Button, Icon, Card } from "semantic-ui-react"
+import React,{ useState, useEffect } from 'react'
+import { Grid, Label, Form , Button, Icon, Card , Menu , Dropdown , Modal} from "semantic-ui-react"
 import CommentCard from './CommentCard'
 import moment from 'moment'
 
@@ -12,7 +12,28 @@ import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION} from '../graphql/mutati
 import 'semantic-ui-css/semantic.min.css'
 import './post-card.css'
 
+
+// modal
+
+function exampleReducer(state, action) {
+    switch (action.type) {
+      case 'OPEN_MODAL':
+        return { open: true, dimmer: action.dimmer }
+      case 'CLOSE_MODAL':
+        return { open: false }
+      default:
+        throw new Error()
+    }
+  }
+
 const PostCard = ({ data }) => {
+
+    // modal
+    const [state, dispatch] = React.useReducer(exampleReducer, {
+        open: false,
+        dimmer: undefined,
+      })
+    const { open, dimmer } = state
 
     
 
@@ -115,6 +136,11 @@ const PostCard = ({ data }) => {
         
     }
 
+    const editPost = (e) => {
+        e.preventDefault()
+        dispatch({ type: 'OPEN_MODAL', dimmer: 'inverted' })
+    }
+
     useEffect( () => {
 
         if(resultComment.data){
@@ -128,8 +154,23 @@ const PostCard = ({ data }) => {
 
     return(
         <Card>
-            
-            <Card.Content header = { post.firstName } />
+            <Grid columns = {2}>
+                <Grid.Row>
+                    <Grid.Column width = {12}>
+                        <Card.Content header = { post.firstName } />
+                    </Grid.Column>
+                    <Grid.Column width = {4}>
+                      <Dropdown icon = "ellipsis vertical">
+                        <Dropdown.Menu>
+                            <div className = "dropbox">
+                                <Button className = "ui button basic" onClick = {editPost}>Edit Post</Button>
+                                <Button className = "ui button basic" onClick = {editPost}>Delete Post</Button>
+                            </div>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
             <Label size = 'tiny' className = "large-label">{  moment(post.createdAt).fromNow()}</Label>
             
             <Card.Content description = { 
@@ -189,6 +230,54 @@ const PostCard = ({ data }) => {
                 </Card.Content>
             </Card.Content>
                          
+
+            
+            <Modal
+                size = 'mini'
+                dimmer={dimmer}
+                open={open}
+                onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
+            >
+                <Grid columns = {2}>
+                    <Grid.Row>
+                        <Grid.Column width = {12} className = "grid-header" >
+                            <Label> Edit Post </Label>
+                        </Grid.Column>
+                        <Grid.Column width = {4} className = "center-me">
+                            <Button
+                                size = 'mini'
+                                circular
+                                > X 
+                            </Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Label size = 'large' className = 'no-margin-top' >{localStorage.getItem('name')}</Label> <br />
+                            <Label size = 'tiny'> { moment(post.createdAt).fromNow()  } </Label>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width = {10}>
+                            <Form>
+                                <Form.TextArea
+                                    size = 'tiny'
+                                    placeholder = "Input text here..."
+                                    name = 'message' >
+                                    { post.body }
+                                </Form.TextArea>
+                            </Form>
+                        </Grid.Column>
+                        <Grid.Column width = {6}>
+                            <Button 
+                                size = 'mini'
+                                > Update 
+                            </Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+
+            </Modal>
             
         </Card>
     )
