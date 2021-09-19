@@ -10,11 +10,15 @@ export const GET_POSTS_QUERY = gql`
             firstName
             countComment
             countLike
-            comment{
-                body
-                firstName
-                createdAt
-            }
+           
+        }
+    }
+`
+export const GET_CL_QUERY = gql`
+    query {
+        getPost {
+            countComment
+            countLike
         }
     }
 `
@@ -34,6 +38,7 @@ export const GET_COMMENT_QUERY = gql`
             body
             firstName
             createdAt
+            commentLikes
         }
     }
 `

@@ -62,3 +62,14 @@ export const CREATE_COMMENT_MUTATION = gql`
         }
     }
 `
+
+
+export const CREATE_LIKE_MUTATION = gql`
+    mutation createLike(
+        $id:String
+    ){
+        createLike(
+            id:$id
+        )
+    }
+`

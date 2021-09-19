@@ -6,8 +6,8 @@ import moment from 'moment'
 
 // graphq
 import { useQuery , useMutation  } from '@apollo/client'
-import { GET_COMMENT_QUERY } from '../graphql/query'
-import { CREATE_COMMENT_MUTATION } from '../graphql/mutation'
+import { GET_COMMENT_QUERY , GET_CL_QUERY } from '../graphql/query'
+import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION} from '../graphql/mutation'
 
 import 'semantic-ui-css/semantic.min.css'
 import './post-card.css'
@@ -22,10 +22,22 @@ const PostCard = ({ data }) => {
         body: data.body.length >= 150 ? data.body.slice(0,150) : data.body,
         createdAt: data.createdAt,
         countLike: data.countLike,
-        countComment: data.countComment,
-        comment: data.comment
-
+        countComment: data.countComment
     })
+
+
+    let [ postCommentLike , setPostCommentLike ] = useState({
+        countLike:0,
+        counntComment:0
+    })
+
+    const [ createLike ] = useMutation(  CREATE_LIKE_MUTATION , {
+        update(proxy,result){
+            // console.log(result)
+            setPost( (e) => ({ ...e, "countLike": result.data.createLike }) )
+        }
+    })
+
 
 
     let [ myComment , setMyComment ] = useState([])
@@ -64,7 +76,19 @@ const PostCard = ({ data }) => {
         },onError(error){
             console.log(error.graphQLErrors[0].extensions.errors)
         }
+
     })
+
+    const likeHandler = (e) => {
+        e.preventDefault()
+        createLike({
+            variables:{
+                id: post._id
+            }
+        })
+        
+
+    }
 
     const commentHandler = (e) => {
         e.preventDefault()
@@ -85,24 +109,18 @@ const PostCard = ({ data }) => {
         e.preventDefault()
         if( util.limit == 1 && util.skip == 0  ){
             setUtil( (e) => ({ "skip": 0, "limit": 5 }) )
-        }else if( post.countComment > util.skip + 5 ){
+        }else if( post.countComment > util.skip + 4 ){
             setUtil( (e) => ({ "skip": e.skip += 5 , "limit" : 5}) )
-            console.log( post.countComment )
-            console.log(util.skip)
-        } else {
-            console.log( post.countComment )
-            console.log(util.skip)
         }
         
     }
 
     useEffect( () => {
+
         if(resultComment.data){
            setMyComment( resultComment.data.getComment )
            resultComment.refetch()
         }
-
-
 
     },[resultComment])
 
@@ -132,8 +150,10 @@ const PostCard = ({ data }) => {
                 </div>
             } />
             <Card.Content extra>
-                <Label>  <Icon name = "comments" />  Comment  {post.countComment} </Label> 
-                <Label> <Icon name = "heart" />  Like {post.countLike} </Label>
+
+                <Button>  <Icon name = "comments" />  Comment  {post.countComment} </Button> 
+                <Button onClick = {likeHandler} > <Icon name = "heart" />  Like {post.countLike} </Button>
+                 
                 <Card.Content extra>
                     <Form>
                     <Grid columns = {2} className = 'comment-field'>
