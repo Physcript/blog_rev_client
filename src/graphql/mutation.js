@@ -73,3 +73,16 @@ export const CREATE_LIKE_MUTATION = gql`
         )
     }
 `
+
+export const UPDATE_POST_MUTATION = gql`
+    mutation updatePost(
+        $postId:String
+        $body:String
+    ){
+        updatePost(
+            postId:$postId
+            body:$body
+        )
+    }
+
+`

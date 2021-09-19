@@ -7,7 +7,7 @@ import moment from 'moment'
 // graphq
 import { useQuery , useMutation  } from '@apollo/client'
 import { GET_COMMENT_QUERY , GET_CL_QUERY } from '../graphql/query'
-import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION} from '../graphql/mutation'
+import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION , UPDATE_POST_MUTATION} from '../graphql/mutation'
 
 import 'semantic-ui-css/semantic.min.css'
 import './post-card.css'
@@ -16,17 +16,22 @@ import './post-card.css'
 // modal
 
 function exampleReducer(state, action) {
+
     switch (action.type) {
       case 'OPEN_MODAL':
         return { open: true, dimmer: action.dimmer }
       case 'CLOSE_MODAL':
         return { open: false }
       default:
-        throw new Error()
+        throw new Error()   
     }
   }
 
 const PostCard = ({ data }) => {
+
+    const [ update , setUpdate ] = useState({
+        body: ''
+    })
 
     // modal
     const [state, dispatch] = React.useReducer(exampleReducer, {
@@ -124,6 +129,33 @@ const PostCard = ({ data }) => {
     const onChange = (e) => {
         const {name,value} = e.target
         setPostComment( (val) => ({ ...val, [name]: value}) )
+    }
+
+    const onChangeUpdate = (e) => {
+        const {name,value} = e.target
+        setUpdate( (val) => ({ ...val, [name]:value }) )
+        console.log(update.body)
+    }
+
+
+
+    const [updatePostHandler] = useMutation(UPDATE_POST_MUTATION, {
+        update( proxy, result ){
+            setPost( (val) => ({ ...val, "body": update.body }) )
+        },onError(error){
+            console.log(error.graphQLErrors[0].extensions.errors)
+        }
+    })
+
+    const updateHandler = (e) => {
+        e.preventDefault()
+        dispatch({ type: 'CLOSE_MODAL' })
+        updatePostHandler({
+            variables:{
+                postId: post._id,
+                body: update.body
+            }
+        })
     }
     
     const showComment = (e) => {
@@ -263,7 +295,10 @@ const PostCard = ({ data }) => {
                                 <Form.TextArea
                                     size = 'tiny'
                                     placeholder = "Input text here..."
-                                    name = 'message' >
+                                    name = 'body' 
+                                    value = {update.body}
+                                    onChange = {onChangeUpdate}
+                                    >
                                     { post.body }
                                 </Form.TextArea>
                             </Form>
@@ -271,6 +306,7 @@ const PostCard = ({ data }) => {
                         <Grid.Column width = {6}>
                             <Button 
                                 size = 'mini'
+                                onClick = { updateHandler }
                                 > Update 
                             </Button>
                         </Grid.Column>
