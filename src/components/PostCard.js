@@ -6,7 +6,7 @@ import moment from 'moment'
 
 // graphq
 import { useQuery , useMutation  } from '@apollo/client'
-import { GET_COMMENT_QUERY , GET_CL_QUERY } from '../graphql/query'
+import { GET_COMMENT_QUERY , GET_CL_QUERY , GET_ACTION_QUERY} from '../graphql/query'
 import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION , UPDATE_POST_MUTATION} from '../graphql/mutation'
 
 import 'semantic-ui-css/semantic.min.css'
@@ -28,7 +28,6 @@ function exampleReducer(state, action) {
   }
 
 const PostCard = ({ data }) => {
-
     const [ update , setUpdate ] = useState({
         body: ''
     })
@@ -48,7 +47,9 @@ const PostCard = ({ data }) => {
         body: data.body.length >= 150 ? data.body.slice(0,150) : data.body,
         createdAt: data.createdAt,
         countLike: data.countLike,
-        countComment: data.countComment
+        countComment: data.countComment,
+        user: data.user,
+        action: false
     })
 
 
@@ -59,8 +60,7 @@ const PostCard = ({ data }) => {
 
     const [ createLike ] = useMutation(  CREATE_LIKE_MUTATION , {
         update(proxy,result){
-            // console.log(result)
-            setPost( (e) => ({ ...e, "countLike": result.data.createLike }) )
+            setPost( (e) => ({ ...e, "countLike" : result.data.createLike }) )
         }
     })
 
@@ -159,6 +159,7 @@ const PostCard = ({ data }) => {
     }
     
     const showComment = (e) => {
+
         e.preventDefault()
         if( util.limit == 1 && util.skip == 0  ){
             setUtil( (e) => ({ "skip": 0, "limit": 5 }) )
@@ -171,6 +172,19 @@ const PostCard = ({ data }) => {
     const editPost = (e) => {
         e.preventDefault()
         dispatch({ type: 'OPEN_MODAL', dimmer: 'inverted' })
+    }
+    
+    const myAction = useQuery( GET_ACTION_QUERY , {
+        variables:{
+            postId:post._id
+        }
+    })
+
+    const checkEditButton = (e) => {
+        e.preventDefault()
+        if( myAction.data ){
+            setPost( (val) => ({ ...val, "action": myAction.data.checkAction }))
+        }
     }
 
     useEffect( () => {
@@ -192,13 +206,24 @@ const PostCard = ({ data }) => {
                         <Card.Content header = { post.firstName } />
                     </Grid.Column>
                     <Grid.Column width = {4}>
-                      <Dropdown icon = "ellipsis vertical">
-                        <Dropdown.Menu>
-                            <div className = "dropbox">
-                                <Button className = "ui button basic" onClick = {editPost}>Edit Post</Button>
-                                <Button className = "ui button basic" onClick = {editPost}>Delete Post</Button>
-                            </div>
-                        </Dropdown.Menu>
+                      <Dropdown icon = "ellipsis vertical" onClick = { checkEditButton }>
+                          { post.action ? (
+
+                            <Dropdown.Menu>
+                                <div className = "dropbox">
+                                    <Button className = "ui button basic" onClick = {editPost}>Edit Post</Button>
+                                    <Button className = "ui button basic" onClick = {editPost}>Delete Post</Button>
+                                </div>
+                            </Dropdown.Menu>
+                          ) : (
+
+                            <Dropdown.Menu>
+                                <div className = "dropbox">
+                                    <Button className = "ui button basic" onClick>Post Info</Button>
+                                    <Button className = "ui button basic" onClick >Check Profile</Button>
+                                </div>
+                            </Dropdown.Menu>
+                          )  }
                       </Dropdown>
                     </Grid.Column>
                 </Grid.Row>

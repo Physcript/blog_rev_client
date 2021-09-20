@@ -10,7 +10,7 @@ export const GET_POSTS_QUERY = gql`
             firstName
             countComment
             countLike
-           
+            user
         }
     }
 `
@@ -41,4 +41,15 @@ export const GET_COMMENT_QUERY = gql`
             commentLikes
         }
     }
+`
+
+export const GET_ACTION_QUERY = gql`
+    query checkAction(
+        $postId: String
+    ){
+        checkAction(
+            postId: $postId
+        )
+    }
+
 `
