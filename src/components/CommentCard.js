@@ -46,7 +46,9 @@ const CommentCard = ({comment}) => {
           <Card.Content description = 
               {data.body}>
           </Card.Content>
+          <Card.Content>
           <Button onClick = {likeHandler} > <Icon name = "heart" />  Like { data.countLike  } </Button>
+          </Card.Content> <br/>
         </Card>
     )
 }

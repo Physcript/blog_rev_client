@@ -1,13 +1,13 @@
 
 import React,{ useState, useEffect } from 'react'
-import { Grid, Label, Form , Button, Icon, Card , Menu , Dropdown , Modal} from "semantic-ui-react"
+import { Grid, Label, Form , Button, Icon, Card , Menu , Dropdown , Modal, GridColumn} from "semantic-ui-react"
 import CommentCard from './CommentCard'
 import moment from 'moment'
 
 // graphq
 import { useQuery , useMutation  } from '@apollo/client'
 import { GET_COMMENT_QUERY , GET_CL_QUERY , GET_ACTION_QUERY} from '../graphql/query'
-import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION , UPDATE_POST_MUTATION} from '../graphql/mutation'
+import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION , UPDATE_POST_MUTATION, DELETE_POST_MUTATION} from '../graphql/mutation'
 
 import 'semantic-ui-css/semantic.min.css'
 import './post-card.css'
@@ -18,10 +18,14 @@ import './post-card.css'
 function exampleReducer(state, action) {
 
     switch (action.type) {
-      case 'OPEN_MODAL':
-        return { open: true, dimmer: action.dimmer }
-      case 'CLOSE_MODAL':
-        return { open: false }
+        case 'OPEN_MODAL':
+            return { open: true, dimmer: action.dimmer }
+        case 'CLOSE_MODAL':
+            return { open: false }
+        case 'OPEN_DELETE_MODAL':
+            return { open_delete: true, dimmer: action.dimmer }
+        case 'CLOSE_DELETE_MODAL':
+            return { open_delete: false }
       default:
         throw new Error()   
     }
@@ -36,8 +40,9 @@ const PostCard = ({ data }) => {
     const [state, dispatch] = React.useReducer(exampleReducer, {
         open: false,
         dimmer: undefined,
+        open_delete: false,
       })
-    const { open, dimmer } = state
+    const { open, dimmer , open_delete  } = state
 
     
 
@@ -173,7 +178,35 @@ const PostCard = ({ data }) => {
         e.preventDefault()
         dispatch({ type: 'OPEN_MODAL', dimmer: 'inverted' })
     }
-    
+    const deletePost = (e) => {
+        e.preventDefault()
+        dispatch( {type: 'OPEN_DELETE_MODAL' , dimmer: 'inverted' } )
+    }
+
+
+    const [ deletePostMutation ] = useMutation(DELETE_POST_MUTATION,{
+        update( proxy,result ){
+            console.log(result)
+        }
+    })
+
+    const deletePostHandler = (e) => {
+        e.preventDefault()
+        deletePostMutation({
+            variables:{
+                postId: post._id
+            }
+        })
+        dispatch( {type: 'CLOSE_DELETE_MODAL' , dimmer: 'inverted' } )
+
+        let this_post_card = document.getElementById('this_post')
+        this_post_card.classList.add("display-none")
+
+    }
+
+
+
+
     const myAction = useQuery( GET_ACTION_QUERY , {
         variables:{
             postId:post._id
@@ -199,7 +232,7 @@ const PostCard = ({ data }) => {
     
 
     return(
-        <Card>
+        <Card id = "this_post" >
             <Grid columns = {2}>
                 <Grid.Row>
                     <Grid.Column width = {12}>
@@ -212,7 +245,7 @@ const PostCard = ({ data }) => {
                             <Dropdown.Menu>
                                 <div className = "dropbox">
                                     <Button className = "ui button basic" onClick = {editPost}>Edit Post</Button>
-                                    <Button className = "ui button basic" onClick = {editPost}>Delete Post</Button>
+                                    <Button className = "ui button basic" onClick = {deletePost}>Delete Post</Button>
                                 </div>
                             </Dropdown.Menu>
                           ) : (
@@ -287,14 +320,72 @@ const PostCard = ({ data }) => {
                 </Card.Content>
             </Card.Content>
                          
+            <Modal
+                size = 'mini'
+                dimmer = {dimmer}
+                open = {open_delete}
+                onClose = { () => dispatch ({ type: 'CLOSE_DELETE_MODAL' }) }
+            >
+                   <Grid columns = {2}>
+                    <Grid.Row>
+                        <Grid.Column width = {12} className = "grid-header" >
+                            <Label> Delete Post </Label>
+                        </Grid.Column>
+                        <Grid.Column width = {4} className = "center-me">
+                            <Button
+                                size = 'mini'
+                                circular
+                                > X 
+                            </Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Label size = 'large' className = 'no-margin-top' >{localStorage.getItem('name')}</Label> <br />
+                            <Label size = 'tiny'> { moment(post.createdAt).fromNow()  } </Label>
+                        </Grid.Column>
+                    </Grid.Row>
+                    
+                    <Grid.Row columns = {1}>
+                        <Grid.Column >
+                            <Form className = "center-me">
+                                <Label size = 'large'>{post.body}</Label>
+                            </Form>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns = {1}>
+                        <Grid.Column wddth = {15}>
+                            <Form>
+                                <Label size = 'large'> Are you sure you want to delete this post </Label>
+                            </Form>
+                        </Grid.Column>
+                    </Grid.Row>
+                    
+                    <Grid.Row>
+                        <GridColumn className = "center-me">
+                            <Button negative onClick = {deletePostHandler} > Delete </Button>
+                        </GridColumn>
+                        <GridColumn className = "center-me">
+                            <Button> Cancel </Button>
+                        </GridColumn>
+                    </Grid.Row>
 
+
+                    </Grid>
+            </Modal>
             
+
+
+
+
+
             <Modal
                 size = 'mini'
                 dimmer={dimmer}
                 open={open}
                 onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
             >
+                
                 <Grid columns = {2}>
                     <Grid.Row>
                         <Grid.Column width = {12} className = "grid-header" >
@@ -319,12 +410,11 @@ const PostCard = ({ data }) => {
                             <Form>
                                 <Form.TextArea
                                     size = 'tiny'
-                                    placeholder = "Input text here..."
+                                    placeholder =  { post.body }
                                     name = 'body' 
                                     value = {update.body}
                                     onChange = {onChangeUpdate}
                                     >
-                                    { post.body }
                                 </Form.TextArea>
                             </Form>
                         </Grid.Column>

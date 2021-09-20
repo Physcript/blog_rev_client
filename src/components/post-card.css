@@ -26,3 +26,12 @@ form .comment-field .column {
 .ui.grid .no-margin-top {
     padding-bottom: 0;
 }
+.ui .center-me  , .ui .center-me .label {
+    text-align: center;
+    padding: 0 !important;
+}
+.ui .display-none {
+    background: red;
+    display: none;
+
+}
