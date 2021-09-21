@@ -41,7 +41,7 @@ const Headers = () =>  {
                     'name': localStorage.getItem('name')
                 })
             )
-            window.location.href = 'https://blog-rev-server.herokuapp.com/post'
+            window.location.href = 'https://naughty-borg-a0db40.netlify.app/post'
 
         },onError(error){
             setLoginError(error.graphQLErrors[0].extensions)
@@ -64,7 +64,7 @@ const Headers = () =>  {
         e.preventDefault()
         localStorage.removeItem('token')
         localStorage.removeItem('name')
-        window.location.href = 'https://blog-rev-server.herokuapp.com/'   
+        window.location.href = 'https://naughty-borg-a0db40.netlify.app/'   
     }
 
     const myUrl = `/profile/${localStorage.getItem('_id')}`
