@@ -41,7 +41,7 @@ const Headers = () =>  {
                     'name': localStorage.getItem('name')
                 })
             )
-            window.location.href = 'https://naughty-borg-a0db40.netlify.app/post'
+            window.location.href = 'https://naughty-borg-a0db40.netlify.app/home'
 
         },onError(error){
             setLoginError(error.graphQLErrors[0].extensions)
