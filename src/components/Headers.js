@@ -41,7 +41,7 @@ const Headers = () =>  {
                     'name': localStorage.getItem('name')
                 })
             )
-            window.location.href = 'http://localhost:3000/home'
+            window.location.href = 'https://blog-rev-server.herokuapp.com/post'
 
         },onError(error){
             setLoginError(error.graphQLErrors[0].extensions)
@@ -64,7 +64,7 @@ const Headers = () =>  {
         e.preventDefault()
         localStorage.removeItem('token')
         localStorage.removeItem('name')
-        window.location.href = 'http://localhost:3000/'   
+        window.location.href = 'https://blog-rev-server.herokuapp.com/'   
     }
 
     const myUrl = `/profile/${localStorage.getItem('_id')}`
