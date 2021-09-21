@@ -43,7 +43,7 @@ const Headers = () =>  {
                 })
             )
             
-            history.push('/post')
+            history.push('/home')
 
         },onError(error){
             setLoginError(error.graphQLErrors[0].extensions)
