@@ -36,12 +36,14 @@ const Headers = () =>  {
             localStorage.setItem('token', result.data.login.token)
             localStorage.setItem('name', (result.data.login.firstName))
             localStorage.setItem('_id', result.data.login._id )
+            
             setMyData( data => 
                 ({
                     'name': localStorage.getItem('name')
                 })
             )
-            window.location.href = 'https://naughty-borg-a0db40.netlify.app/home'
+            
+            history.push('/post')
 
         },onError(error){
             setLoginError(error.graphQLErrors[0].extensions)
