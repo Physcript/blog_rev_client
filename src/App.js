@@ -21,7 +21,7 @@ function App() {
           <Container>
             <Headers />
             <Route exact path = '/' component = {Home} > <Home /> </Route>
-            <Route exact path = '/profile' component = {Profile}> <Profile /> </Route>
+            <Route exact path = '/profile/:id' component = {Profile}> <Profile /> </Route>
             {/* <Route exact path = '/home' component = {Dash}> <Dash /> </Route> */}
             <ProtectedRoute path = '/home' component = {Dash}  />
           </Container>

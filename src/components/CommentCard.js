@@ -37,7 +37,7 @@ const CommentCard = ({comment}) => {
 
     
     return (
-        <Card key = {comment.id}>
+        <Card key = {comment.id} className = "commentCard">
           <Card.Content header = {data.name} size = 'large' />
 
           <Label size = 'tiny'>

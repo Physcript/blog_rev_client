@@ -35,6 +35,7 @@ const Headers = () =>  {
             setLoginError('')
             localStorage.setItem('token', result.data.login.token)
             localStorage.setItem('name', (result.data.login.firstName))
+            localStorage.setItem('_id', result.data.login._id )
             setMyData( data => 
                 ({
                     'name': localStorage.getItem('name')
@@ -57,6 +58,8 @@ const Headers = () =>  {
         })
     }
 
+    
+
     const logoutHandler = (e) => {
         e.preventDefault()
         localStorage.removeItem('token')
@@ -64,6 +67,8 @@ const Headers = () =>  {
         window.location.href = 'http://localhost:3000/'   
     }
 
+    const myUrl = `/profile/${localStorage.getItem('_id')}`
+    
     useEffect( () => {
 
         if(localStorage.getItem('name')){
@@ -73,12 +78,12 @@ const Headers = () =>  {
                 })
             )
         }
-
-    },[]) 
+        
+    },[])
 
     return (
         <div className = "header">
-            <Menu pointing secondary>
+            <Menu pointing secondary >
 
             <Menu.Item
                 name='News Blog'
@@ -94,6 +99,20 @@ const Headers = () =>  {
                 ) : '' 
             }
 
+            <Menu.Item
+                position = 'right'
+                as = {Link}
+                to = '/'
+            >
+                <Form>
+                    <Form.Input
+                        placeholder = 'Search user'
+                        size = 'mini'
+                        className = 'search_input'
+                    ></Form.Input>
+                </Form>
+            </ Menu.Item>
+
             <Menu.Menu position='right' className = "header-login">
                 { loginError.title ? (
                     <Label className = 'error' > {loginError.title} </Label>
@@ -101,10 +120,11 @@ const Headers = () =>  {
 
                 { localStorage.getItem('name') ? (
                     <>
+                    
                     <Menu.Item
                         name = {myData.name}
                         as = {Link}
-                        to = '/Profile'
+                        to = {myUrl} 
                     />
                      <Menu.Item
                         primary

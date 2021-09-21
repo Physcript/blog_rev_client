@@ -1,8 +1,8 @@
 
 
-.header-login{
-   display:flex;
-   align-items: center;
+.ui.secondary.pointing.menu{
+    display: flex !important;
+    align-items: center;
 }
 .ui.input > input {
     margin: .5em 1em .5em 0;
@@ -11,4 +11,8 @@
 .error {
     color:#FF7F7F  !important;
     margin: 0 1em !important;
+}
+.a.right.item{
+    margin: 0 !important;
+    padding: 0 !important;
 }

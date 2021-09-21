@@ -3,11 +3,12 @@ import React,{ useState, useEffect } from 'react'
 import { Grid, Label, Form , Button, Icon, Card , Menu , Dropdown , Modal, GridColumn} from "semantic-ui-react"
 import CommentCard from './CommentCard'
 import moment from 'moment'
+import { Link } from 'react-router-dom'
 
 // graphq
 import { useQuery , useMutation  } from '@apollo/client'
 import { GET_COMMENT_QUERY , GET_CL_QUERY , GET_ACTION_QUERY} from '../graphql/query'
-import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION , UPDATE_POST_MUTATION, DELETE_POST_MUTATION} from '../graphql/mutation'
+import { CREATE_COMMENT_MUTATION , CREATE_LIKE_MUTATION , UPDATE_POST_MUTATION, DELETE_POST_MUTATION,TOTAL_COUNT_COMMENT_MUTATION  } from '../graphql/mutation'
 
 import 'semantic-ui-css/semantic.min.css'
 import './post-card.css'
@@ -57,19 +58,11 @@ const PostCard = ({ data }) => {
         action: false
     })
 
-
-    let [ postCommentLike , setPostCommentLike ] = useState({
-        countLike:0,
-        counntComment:0
-    })
-
     const [ createLike ] = useMutation(  CREATE_LIKE_MUTATION , {
         update(proxy,result){
             setPost( (e) => ({ ...e, "countLike" : result.data.createLike }) )
         }
     })
-
-
 
     let [ myComment , setMyComment ] = useState([])
 
@@ -103,6 +96,13 @@ const PostCard = ({ data }) => {
 
         resultComment.refetch()
         setUtil( (e) => ({ skip: 0 , limit: 1 }))
+            
+        totalComment({
+            variables:{
+                postId: post._id
+            }
+        })
+
 
         },onError(error){
             console.log(error.graphQLErrors[0].extensions.errors)
@@ -120,15 +120,23 @@ const PostCard = ({ data }) => {
         
 
     }
+    
+    const [ totalComment ] = useMutation(TOTAL_COUNT_COMMENT_MUTATION, {
+        update( proxy,result ){
+            console.log(result)
+            setPost( (val) => ({ ...val, "countComment" : result.data.getCommentCount}) )
+        }
+    })
 
     const commentHandler = (e) => {
-        e.preventDefault()
+
         creatingComment({
             variables:{
                 postId: post._id,
                 body: postComment.comment
             }
         })
+        
     } 
 
     const onChange = (e) => {
@@ -220,6 +228,8 @@ const PostCard = ({ data }) => {
         }
     }
 
+    const myProfile = `/profile/${post.user}`
+
     useEffect( () => {
 
         if(resultComment.data){
@@ -236,7 +246,11 @@ const PostCard = ({ data }) => {
             <Grid columns = {2}>
                 <Grid.Row>
                     <Grid.Column width = {12}>
-                        <Card.Content header = { post.firstName } />
+                        <Card.Content 
+                            header = { post.firstName }
+                            as = {Link}
+                            to = {myProfile}
+                            />
                     </Grid.Column>
                     <Grid.Column width = {4}>
                       <Dropdown icon = "ellipsis vertical" onClick = { checkEditButton }>

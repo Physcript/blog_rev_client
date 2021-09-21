@@ -97,3 +97,28 @@ export const DELETE_POST_MUTATION = gql`
         )
     }
 `
+
+export const GET_PROFILE_MUTATION = gql`
+    mutation getProfile(
+        $id:String
+    ){
+        getProfile(
+            id:$id
+        ){
+            firstName
+            lastName
+            email
+            createdAt
+        }
+    }
+`
+
+export const TOTAL_COUNT_COMMENT_MUTATION = gql`
+    mutation getCommentCount( 
+        $postId:String
+    ){
+        getCommentCount(
+            postId:$postId
+        )
+    }
+`

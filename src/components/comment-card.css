@@ -9,3 +9,7 @@ section{
     padding-top: 0;
     padding-left: 13px;
 }
+
+.ui.commentCard{
+    padding: 3em;
+}
