@@ -20,10 +20,10 @@ function App() {
         <Switch>
           <Container>
             <Headers />
-            <Route exact path = '/' component = {Home} > <Home /> </Route>
-            <Route exact path = '/profile/:id' component = {Profile}> <Profile /> </Route>
+            <Route exact path = 'https://naughty-borg-a0db40.netlify.app/' component = {Home} > <Home /> </Route>
+            <Route exact path = 'https://naughty-borg-a0db40.netlify.app/profile/:id' component = {Profile}> <Profile /> </Route>
             {/* <Route exact path = '/home' component = {Dash}> <Dash /> </Route> */}
-            <ProtectedRoute path = '/home' component = {Dash}  />
+            <ProtectedRoute path = 'https://naughty-borg-a0db40.netlify.app/home' component = {Dash}  />
           </Container>
         </Switch>
       </Router>
